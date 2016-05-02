@@ -2,7 +2,17 @@
 #define _CPU_I8080
 
 struct cpu_i8080;
-struct flags_i8080;
+
+struct flags_i8080 {
+    unsigned char s:1;
+    unsigned char z:1;
+    unsigned char i:1;
+    unsigned char h:1;
+    unsigned char pad1:1;
+    unsigned char p:1;
+    unsigned char pad2:1;
+    unsigned char c:1;
+};
 
 enum opcode_i8080 {
     NOP,
