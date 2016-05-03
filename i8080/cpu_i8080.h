@@ -1,8 +1,13 @@
 #ifndef _CPU_I8080
 #define _CPU_I8080
 
-struct cpu_i8080;
+#include <stdint.h>
+// Typedefs
+typedef uint8_t reg_t;
+typedef uint16_t ptr_t;
+typedef unsigned char byte_t;
 
+// Struct definitions
 struct flags_i8080 {
     unsigned char s:1;
     unsigned char z:1;
@@ -14,7 +19,22 @@ struct flags_i8080 {
     unsigned char c:1;
 };
 
-enum opcode_i8080 {
+struct memory {
+    byte_t ram[UINT16_MAX];
+    byte_t stk[UINT16_MAX];
+    byte_t data[UINT16_MAX];
+};
+
+struct cpu_i8080 {
+    reg_t registers[7];
+    struct flags_i8080 flags;
+    ptr_t pc;
+    ptr_t sp;
+    struct memory* mem;
+};
+
+// Enums
+typedef enum opcode_i8080 {
     NOP,
     LXI_B,
     STAX_B,
@@ -271,7 +291,51 @@ enum opcode_i8080 {
     CALL_FD,
     CPI,
     RST_7
-};
+} Opcode_i8080;
+
+typedef enum register_i8080 {
+    // Actual registers
+    A,
+    B,
+    C,
+    D,
+    E,
+    H,
+    L,
+    // Combination of registers
+    M // (HL)
+} Register_i8080;
+
+typedef enum result {
+    OK,
+    FAIL
+} Result;
+
+// Function signatures
+// Opcodes
+Result nop(struct cpu_i8080* cpu);
+Result mov(struct cpu_i8080* cpu, Register_i8080 dest, Register_i8080 src);
+Result add(struct cpu_i8080* cpu, Register_i8080 reg);
+Result adi(struct cpu_i8080* cpu, byte_t byte);
+Result adc(struct cpu_i8080* cpu, Register_i8080 reg);
+Result aci(struct cpu_i8080* cpu, byte_t byte);
+Result sub(struct cpu_i8080* cpu, Register_i8080 reg);
+Result sui(struct cpu_i8080* cpu, byte_t byte);
+Result sbb(struct cpu_i8080* cpu, Register_i8080 reg);
+Result sbi(struct cpu_i8080* cpu, byte_t byte);
+Result inr(struct cpu_i8080* cpu, Register_i8080 reg);
+Result dcr(struct cpu_i8080* cpu, Register_i8080 reg);
+Result inx(struct cpu_i8080* cpu, Register_i8080 reg);
+Result dcx(struct cpu_i8080* cpu, Register_i8080 reg);
+Result ana(struct cpu_i8080* cpu, Register_i8080 reg);
+Result ani(struct cpu_i8080* cpu, byte_t byte);
+Result xra(struct cpu_i8080* cpu, Register_i8080 reg);
+Result xri(struct cpu_i8080* cpu, byte_t byte);
+Result ora(struct cpu_i8080* cpu, Register_i8080 reg);
+Result ori(struct cpu_i8080* cpu, byte_t byte);
+Result cmp(struct cpu_i8080* cpu, Register_i8080 reg);
+Result cpi(struct cpu_i8080* cpu, byte_t byte);
+Result jmp(struct cpu_i8080* cpu, ptr_t addr);
+
 
 #endif
-
